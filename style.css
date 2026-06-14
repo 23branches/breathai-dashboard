@@ -1,0 +1,252 @@
+:root {
+  --bg: #0a0a0c;
+  --surface: #111114;
+  --surface-2: #17171b;
+  --border: #232328;
+  --text: #f2f2f0;
+  --text-muted: #8d8d96;
+  --text-faint: #56565e;
+  --blue: #3b82f6;
+  --blue-dim: #1d4ed8;
+  --green: #5fae4e;
+  --amber: #d99a2b;
+  --red: #e1554f;
+
+  --font-display: 'Fraunces', serif;
+  --font-body: 'DM Sans', sans-serif;
+  --font-mono: 'DM Mono', monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.5;
+}
+
+.app {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 2.5rem 1.5rem 4rem;
+}
+
+header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+h1 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 2.4rem;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+h1 span {
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+.subtitle {
+  margin: 0.35rem 0 0;
+  color: var(--text-muted);
+  font-size: 0.95rem;
+}
+
+.header-right {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.75rem;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.field label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-faint);
+}
+
+select, button {
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.55rem 0.9rem;
+}
+
+select {
+  min-width: 180px;
+}
+
+button {
+  cursor: pointer;
+  color: var(--blue);
+  border-color: var(--blue-dim);
+  transition: background 0.15s ease;
+}
+
+button:hover {
+  background: rgba(59, 130, 246, 0.1);
+}
+
+.status-line {
+  color: var(--text-faint);
+  font-size: 0.85rem;
+  margin: 0 0 1.5rem;
+}
+
+.stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.1rem 1.25rem;
+}
+
+.stat-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin: 0 0 0.5rem;
+}
+
+.stat-value {
+  font-family: var(--font-mono);
+  font-size: 1.7rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+.stat-sub {
+  font-size: 0.78rem;
+  color: var(--text-faint);
+  margin: 0.35rem 0 0;
+}
+
+.stat-good { color: var(--green); }
+.stat-warn { color: var(--amber); }
+.stat-bad { color: var(--red); }
+
+.chart-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1rem;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.25rem 1.4rem;
+  grid-column: span 1;
+}
+
+.card-wide {
+  grid-column: span 3;
+}
+
+.card h2 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  font-size: 1.15rem;
+  margin: 0 0 0.4rem;
+}
+
+.card-sub {
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  margin: 0 0 1rem;
+  max-width: 640px;
+}
+
+.chart-wrap {
+  position: relative;
+  height: 260px;
+}
+
+.chart-wrap-small {
+  height: 200px;
+}
+
+.empty-note {
+  color: var(--text-faint);
+  font-size: 0.85rem;
+  font-style: italic;
+  margin: 0.75rem 0 0;
+}
+
+.legend {
+  display: flex;
+  gap: 1.25rem;
+  margin-top: 0.85rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+  display: inline-block;
+}
+
+.dot-good { background: var(--green); }
+.dot-warn { background: var(--amber); }
+.dot-bad { background: var(--red); }
+
+footer {
+  margin-top: 2.5rem;
+  color: var(--text-faint);
+  font-size: 0.8rem;
+}
+
+footer code {
+  font-family: var(--font-mono);
+  background: var(--surface-2);
+  padding: 0.15rem 0.45rem;
+  border-radius: 5px;
+}
+
+@media (max-width: 900px) {
+  .stat-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .chart-grid {
+    grid-template-columns: 1fr;
+  }
+  .card-wide {
+    grid-column: span 1;
+  }
+}

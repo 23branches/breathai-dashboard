@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BreathAI Analytics</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&family=DM+Sans:wght@400;500&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="app">
+
+    <header>
+      <div class="header-left">
+        <h1>BreathAI <span>Analytics</span></h1>
+        <p class="subtitle">Model performance &amp; data collection dashboard</p>
+      </div>
+      <div class="header-right">
+        <div class="field">
+          <label for="profile-select">Profile</label>
+          <select id="profile-select">
+            <option value="/api">Global (all profiles)</option>
+            <option value="/javi/api">Javi</option>
+            <option value="/gabe/api">Gabe</option>
+            <option value="/hailey/api">Hailey</option>
+            <option value="/megan/api">Megan</option>
+          </select>
+        </div>
+        <button id="refresh-btn">Refresh</button>
+      </div>
+    </header>
+
+    <p class="status-line" id="status-line">Loading data&hellip;</p>
+
+    <section class="stat-grid" id="stat-grid"></section>
+
+    <section class="chart-grid">
+
+      <div class="card card-wide">
+        <h2>BAC distribution &amp; data gaps</h2>
+        <p class="card-sub">
+          Sample counts across BAC ranges. Bars below the recommended minimum of
+          <span id="gap-target"></span> samples are highlighted &mdash; these ranges
+          need more targeted data collection.
+        </p>
+        <div class="chart-wrap"><canvas id="bacChart"></canvas></div>
+        <div class="legend">
+          <span><i class="dot dot-good"></i> Sufficient</span>
+          <span><i class="dot dot-warn"></i> Approaching target</span>
+          <span><i class="dot dot-bad"></i> Needs data</span>
+        </div>
+      </div>
+
+      <div class="card card-wide">
+        <h2>Journey to 80% accuracy</h2>
+        <p class="card-sub">
+          Percentage of test predictions within &plusmn;0.10 BAC of the true value,
+          tracked across every model retrain.
+        </p>
+        <div class="chart-wrap"><canvas id="historyChart"></canvas></div>
+        <p class="empty-note" id="history-empty" hidden>
+          No retrains logged yet for this profile. This chart will populate the next
+          time &ldquo;Retrain Model&rdquo; is run from the app.
+        </p>
+      </div>
+
+      <div class="card">
+        <h2>Recording environment</h2>
+        <div class="chart-wrap chart-wrap-small"><canvas id="environmentChart"></canvas></div>
+        <p class="empty-note" id="environment-empty" hidden>No environment tags recorded yet.</p>
+      </div>
+
+      <div class="card">
+        <h2>Noise level</h2>
+        <div class="chart-wrap chart-wrap-small"><canvas id="noiseChart"></canvas></div>
+        <p class="empty-note" id="noise-empty" hidden>No noise tags recorded yet.</p>
+      </div>
+
+      <div class="card">
+        <h2>Subject behavior</h2>
+        <div class="chart-wrap chart-wrap-small"><canvas id="behaviorChart"></canvas></div>
+        <p class="empty-note" id="behavior-empty" hidden>No behavior tags recorded yet.</p>
+      </div>
+
+      <div class="card" id="profile-card">
+        <h2>Samples per profile</h2>
+        <div class="chart-wrap chart-wrap-small"><canvas id="profileChart"></canvas></div>
+      </div>
+
+    </section>
+
+    <footer>
+      <p>Source: <code id="api-base"></code> &middot; Last updated <span id="last-updated">&mdash;</span></p>
+    </footer>
+
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
