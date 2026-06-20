@@ -42,10 +42,27 @@ function renderStats(prefix, status, analytics, latestHistory) {
 
   const within010 = latestHistory ? (latestHistory.within_0_10 * 100).toFixed(1) : null;
   const within005 = latestHistory ? (latestHistory.within_0_05 * 100).toFixed(1) : null;
+  const within002 = latestHistory ? (latestHistory.within_0_02 * 100).toFixed(1) : null;
+  const within001 = latestHistory ? (latestHistory.within_0_01 * 100).toFixed(1) : null;
   const mae       = latestHistory ? latestHistory.mae : null;
   const r2        = latestHistory ? latestHistory.r2_score : null;
-  const r2cls     = r2 === null ? '' : r2 >= 0.5 ? 'stat-good' : r2 >= 0 ? 'stat-warn' : 'stat-bad';
-  const accCls    = within010 === null ? '' : within010 >= 80 ? 'stat-good' : within010 >= 60 ? 'stat-warn' : 'stat-bad';
+
+  function accColor(val, target) {
+    if (val === null) return '';
+    return parseFloat(val) >= target ? 'stat-good' : parseFloat(val) >= target * 0.75 ? 'stat-warn' : 'stat-bad';
+  }
+
+  function accValue(val) {
+    return val !== null ? `${val}%` : '\u2014';
+  }
+
+  function accSub(val, target, label) {
+    if (val === null) return 'Run a retrain to populate';
+    const remaining = Math.max(0, target - parseFloat(val)).toFixed(1);
+    return parseFloat(val) >= target
+      ? `\u2713 Target of ${target}% reached`
+      : `${remaining}% away from ${target}% target \u2022 ${label}`;
+  }
 
   const cards = [
     {
@@ -55,9 +72,27 @@ function renderStats(prefix, status, analytics, latestHistory) {
     },
     {
       label: 'Accuracy within \u00b10.10 BAC',
-      value: within010 !== null ? `${within010}%` : '\u2014',
-      sub: within010 !== null ? `Target: 80% \u2022 within \u00b10.05: ${within005}%` : 'Run a retrain to populate',
-      cls: accCls,
+      value: accValue(within010),
+      sub: accSub(within010, 80, 'Advisor target'),
+      cls: accColor(within010, 80),
+    },
+    {
+      label: 'Accuracy within \u00b10.05 BAC',
+      value: accValue(within005),
+      sub: accSub(within005, 80, 'Clinical target'),
+      cls: accColor(within005, 80),
+    },
+    {
+      label: 'Accuracy within \u00b10.025 BAC',
+      value: accValue(within002),
+      sub: accSub(within002, 80, 'High precision target'),
+      cls: accColor(within002, 80),
+    },
+    {
+      label: 'Accuracy within \u00b10.01 BAC',
+      value: accValue(within001),
+      sub: accSub(within001, 80, 'Ultimate goal'),
+      cls: accColor(within001, 80),
     },
     {
       label: 'Mean abs. error (MAE)',
@@ -66,12 +101,6 @@ function renderStats(prefix, status, analytics, latestHistory) {
         ? `R\u00b2 score: ${r2.toFixed(4)}${r2 < 0 ? ' \u26a0\ufe0f needs more impaired data' : ''}`
         : 'Run a retrain to populate',
       cls: mae !== null ? (mae < 0.03 ? 'stat-good' : mae < 0.06 ? 'stat-warn' : 'stat-bad') : '',
-    },
-    {
-      label: 'Samples \u2265 legal limit (0.08)',
-      value: `${pctAboveLimit}%`,
-      sub: `${aboveLimit.toLocaleString()} of ${total.toLocaleString()} samples`,
-      cls: aboveLimit / Math.max(total, 1) < 0.1 ? 'stat-warn' : '',
     },
   ];
 
