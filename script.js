@@ -34,11 +34,18 @@ function bacBarColor(count) {
   return '#e1554f';
 }
 
-function renderStats(prefix, status, analytics) {
+function renderStats(prefix, status, analytics, latestHistory) {
   const total = analytics.total_samples ?? 0;
   const aboveLimit = ['0.08-0.10', '0.10-0.12', '0.12-0.14', '0.14+']
     .reduce((sum, key) => sum + (analytics.bac_distribution[key] || 0), 0);
   const pctAboveLimit = total ? ((aboveLimit / total) * 100).toFixed(1) : '0.0';
+
+  const within010 = latestHistory ? (latestHistory.within_0_10 * 100).toFixed(1) : null;
+  const within005 = latestHistory ? (latestHistory.within_0_05 * 100).toFixed(1) : null;
+  const mae       = latestHistory ? latestHistory.mae : null;
+  const r2        = latestHistory ? latestHistory.r2_score : null;
+  const r2cls     = r2 === null ? '' : r2 >= 0.5 ? 'stat-good' : r2 >= 0 ? 'stat-warn' : 'stat-bad';
+  const accCls    = within010 === null ? '' : within010 >= 80 ? 'stat-good' : within010 >= 60 ? 'stat-warn' : 'stat-bad';
 
   const cards = [
     {
@@ -47,24 +54,24 @@ function renderStats(prefix, status, analytics) {
       sub: prefix === '/api' ? 'Across all profiles' : 'This profile',
     },
     {
-      label: 'Model status',
-      value: status.model_trained ? 'Trained' : 'Not trained',
-      sub: status.model_trained
-        ? `${status.sample_count} samples used`
-        : `Needs ${status.minimum_samples_required} minimum`,
-      cls: status.model_trained ? 'stat-good' : 'stat-bad',
+      label: 'Accuracy within \u00b10.10 BAC',
+      value: within010 !== null ? `${within010}%` : '\u2014',
+      sub: within010 !== null ? `Target: 80% \u2022 within \u00b10.05: ${within005}%` : 'Run a retrain to populate',
+      cls: accCls,
+    },
+    {
+      label: 'Mean abs. error (MAE)',
+      value: mae !== null ? mae.toFixed(4) : '\u2014',
+      sub: mae !== null
+        ? `R\u00b2 score: ${r2.toFixed(4)}${r2 < 0 ? ' \u26a0\ufe0f needs more impaired data' : ''}`
+        : 'Run a retrain to populate',
+      cls: mae !== null ? (mae < 0.03 ? 'stat-good' : mae < 0.06 ? 'stat-warn' : 'stat-bad') : '',
     },
     {
       label: 'Samples \u2265 legal limit (0.08)',
       value: `${pctAboveLimit}%`,
       sub: `${aboveLimit.toLocaleString()} of ${total.toLocaleString()} samples`,
       cls: aboveLimit / Math.max(total, 1) < 0.1 ? 'stat-warn' : '',
-    },
-    {
-      label: 'Flagged samples',
-      value: (analytics.flagged_count ?? 0).toLocaleString(),
-      sub: 'Marked for review',
-      cls: analytics.flagged_count > 0 ? 'stat-warn' : '',
     },
   ];
 
@@ -293,7 +300,8 @@ async function loadData() {
       fetchJSON(`${prefix}/model-history`),
     ]);
 
-    renderStats(prefix, status, analytics);
+    const latestHistory = history && history.length > 0 ? history[history.length - 1] : null;
+    renderStats(prefix, status, analytics, latestHistory);
     renderBacChart(analytics);
     renderHistoryChart(history);
     renderTagChart('environmentChart', 'environment-empty', 'environment', analytics.environment, '#3b82f6');
