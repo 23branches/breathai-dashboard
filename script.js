@@ -195,6 +195,8 @@ function renderHistoryChart(history) {
   const labels = history.map((_, i) => `v${i + 1}`);
   const within010 = history.map(h => (h.within_0_10 ?? 0) * 100);
   const within005 = history.map(h => (h.within_0_05 ?? 0) * 100);
+  const within002 = history.map(h => (h.within_0_02 ?? 0) * 100);
+  const within001 = history.map(h => (h.within_0_01 ?? 0) * 100);
   const target = history.map(() => 80);
 
   charts.history = new Chart(canvas, {
@@ -205,26 +207,44 @@ function renderHistoryChart(history) {
         {
           label: 'Within \u00b10.10 BAC',
           data: within010,
-          borderColor: '#3b82f6',
-          backgroundColor: 'rgba(59,130,246,0.12)',
-          fill: true,
+          borderColor: '#5fae4e',
+          backgroundColor: 'rgba(95,174,78,0.08)',
+          fill: false,
           tension: 0.3,
           pointRadius: 4,
         },
         {
           label: 'Within \u00b10.05 BAC',
           data: within005,
-          borderColor: '#8d8d96',
-          borderDash: [4, 4],
+          borderColor: '#3b82f6',
+          backgroundColor: 'rgba(59,130,246,0.08)',
           fill: false,
           tension: 0.3,
-          pointRadius: 3,
+          pointRadius: 4,
+        },
+        {
+          label: 'Within \u00b10.025 BAC',
+          data: within002,
+          borderColor: '#d99a2b',
+          backgroundColor: 'rgba(217,154,43,0.08)',
+          fill: false,
+          tension: 0.3,
+          pointRadius: 4,
+        },
+        {
+          label: 'Within \u00b10.01 BAC (ultimate goal)',
+          data: within001,
+          borderColor: '#e1554f',
+          backgroundColor: 'rgba(225,85,79,0.08)',
+          fill: false,
+          tension: 0.3,
+          pointRadius: 4,
         },
         {
           label: 'Target (80%)',
           data: target,
-          borderColor: '#e1554f',
-          borderDash: [3, 3],
+          borderColor: '#56565e',
+          borderDash: [4, 4],
           borderWidth: 1.5,
           pointRadius: 0,
           fill: false,
@@ -238,6 +258,11 @@ function renderHistoryChart(history) {
         legend: {
           position: 'bottom',
           labels: { color: '#8d8d96', boxWidth: 10, boxHeight: 10, font: { size: 11 } },
+        },
+        tooltip: {
+          callbacks: {
+            label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(1)}%`,
+          },
         },
       },
       scales: {
