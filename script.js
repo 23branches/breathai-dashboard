@@ -102,6 +102,18 @@ function renderStats(prefix, status, analytics, latestHistory) {
         : 'Run a retrain to populate',
       cls: mae !== null ? (mae < 0.03 ? 'stat-good' : mae < 0.06 ? 'stat-warn' : 'stat-bad') : '',
     },
+    {
+      label: 'Samples \u2265 legal limit (0.08)',
+      value: `${pctAboveLimit}%`,
+      sub: `${aboveLimit.toLocaleString()} of ${total.toLocaleString()} samples \u2022 target: 50%`,
+      cls: aboveLimit / Math.max(total, 1) < 0.1 ? 'stat-bad' : aboveLimit / Math.max(total, 1) < 0.3 ? 'stat-warn' : 'stat-good',
+    },
+    {
+      label: 'Flagged samples',
+      value: (analytics.flagged_count ?? 0).toLocaleString(),
+      sub: 'Marked for review by admin',
+      cls: analytics.flagged_count > 0 ? 'stat-warn' : '',
+    },
   ];
 
   statGrid.innerHTML = cards.map(c => `
