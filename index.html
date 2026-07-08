@@ -63,6 +63,46 @@
           No retrains logged yet for this profile. This chart will populate the next
           time &ldquo;Retrain Model&rdquo; is run from the app.
         </p>
+        <div id="latest-retrain-summary" class="latest-summary" hidden>
+          <p class="latest-summary-label">Most recent retrain</p>
+          <div class="latest-summary-grid">
+            <div class="latest-stat">
+              <span class="latest-stat-label">Within &plusmn;0.10</span>
+              <span class="latest-stat-value" id="ls-010"></span>
+            </div>
+            <div class="latest-stat">
+              <span class="latest-stat-label">Within &plusmn;0.05</span>
+              <span class="latest-stat-value" id="ls-005"></span>
+            </div>
+            <div class="latest-stat">
+              <span class="latest-stat-label">Within &plusmn;0.025</span>
+              <span class="latest-stat-value" id="ls-002"></span>
+            </div>
+            <div class="latest-stat">
+              <span class="latest-stat-label">Within &plusmn;0.01</span>
+              <span class="latest-stat-value" id="ls-001"></span>
+            </div>
+            <div class="latest-stat">
+              <span class="latest-stat-label">MAE</span>
+              <span class="latest-stat-value" id="ls-mae"></span>
+            </div>
+            <div class="latest-stat">
+              <span class="latest-stat-label">Samples used</span>
+              <span class="latest-stat-value" id="ls-samples"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="card card-wide" id="range-accuracy-card">
+        <h2>Accuracy by BAC range</h2>
+        <p class="card-sub">
+          Per-range model accuracy across all four thresholds. Ranges with fewer samples
+          show lower accuracy — this is your data collection priority map.
+          <span class="caveat">Note: evaluated on training data, so numbers skew optimistic.
+          Accuracy on unseen samples will be lower, especially in sparse ranges.</span>
+        </p>
+        <div id="range-accuracy-grid" class="range-grid" style="min-height:120px;"></div>
       </div>
 
       <div class="card">
