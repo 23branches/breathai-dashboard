@@ -129,9 +129,11 @@ function renderBacChart(analytics) {
   const dist = analytics.bac_distribution || {};
   const data = BAC_ORDER.map(k => dist[k] || 0);
   const colors = data.map(bacBarColor);
+  const bacCanvas = document.getElementById('bacChart');
+  bacCanvas.parentElement.style.height = '260px';
 
   destroyChart('bac');
-  charts.bac = new Chart(document.getElementById('bacChart'), {
+  charts.bac = new Chart(bacCanvas, {
     type: 'bar',
     data: {
       labels: BAC_ORDER,
@@ -190,9 +192,9 @@ function renderHistoryChart(history) {
   }
 
   canvas.style.display = 'block';
-  emptyNote.hidden = true;
-
-  canvas.style.display = 'block';
+  canvas.style.width = '100%';
+  canvas.style.height = '260px';
+  canvas.parentElement.style.height = '260px';
   emptyNote.hidden = true;
 
   // Populate latest retrain summary row
