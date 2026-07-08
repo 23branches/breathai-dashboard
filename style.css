@@ -239,14 +239,124 @@ footer code {
   border-radius: 5px;
 }
 
+.range-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.range-card {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 1rem 1.1rem;
+}
+
+.range-card-title {
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin: 0 0 0.25rem;
+}
+
+.range-card-count {
+  font-size: 0.75rem;
+  color: var(--text-faint);
+  margin: 0 0 0.75rem;
+}
+
+.range-threshold {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.78rem;
+}
+
+.range-threshold:last-child {
+  border-bottom: none;
+}
+
+.range-threshold-label {
+  color: var(--text-muted);
+}
+
+.range-threshold-value {
+  font-family: var(--font-mono);
+  font-weight: 500;
+}
+
+.range-mae {
+  margin-top: 0.6rem;
+  font-size: 0.75rem;
+  color: var(--text-faint);
+}
+
+.latest-summary {
+  display: none;
+  margin-top: 1.25rem;
+  border-top: 1px solid var(--border);
+  padding-top: 1rem;
+}
+
+.latest-summary-label {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text-faint);
+  margin: 0 0 0.75rem;
+}
+
+.latest-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 0.5rem;
+}
+
+.latest-stat {
+  background: var(--surface-2);
+  border-radius: 8px;
+  padding: 0.65rem 0.85rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.latest-stat-label {
+  font-size: 0.72rem;
+  color: var(--text-faint);
+}
+
+.latest-stat-value {
+  font-family: var(--font-mono);
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text);
+}
+
 @media (max-width: 900px) {
-  .stat-grid {
+  .latest-summary-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 0.78rem;
+  color: var(--text-faint);
+  font-style: italic;
+}
+
+.no-data {
+  color: var(--text-faint);
+  font-style: italic;
+  font-size: 0.85rem;
+  padding: 1rem 0;
+}
+
+@media (max-width: 900px) {
+  .range-grid {
     grid-template-columns: repeat(2, 1fr);
-  }
-  .chart-grid {
-    grid-template-columns: 1fr;
-  }
-  .card-wide {
-    grid-column: span 1;
   }
 }

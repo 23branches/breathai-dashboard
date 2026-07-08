@@ -192,6 +192,33 @@ function renderHistoryChart(history) {
   canvas.style.display = 'block';
   emptyNote.hidden = true;
 
+  canvas.style.display = 'block';
+  emptyNote.hidden = true;
+
+  // Populate latest retrain summary row
+  const latest = history[history.length - 1];
+  const summaryEl = document.getElementById('latest-retrain-summary');
+  summaryEl.removeAttribute('hidden');
+  summaryEl.style.display = 'block';
+
+  function pct(val) { return val != null ? (val * 100).toFixed(1) + '%' : '—'; }
+  function pctColor(val, target = 80) {
+    if (val == null) return 'var(--text)';
+    const p = val * 100;
+    return p >= target ? 'var(--green)' : p >= target * 0.75 ? 'var(--amber)' : 'var(--red)';
+  }
+
+  document.getElementById('ls-010').textContent = pct(latest.within_0_10);
+  document.getElementById('ls-010').style.color = pctColor(latest.within_0_10);
+  document.getElementById('ls-005').textContent = pct(latest.within_0_05);
+  document.getElementById('ls-005').style.color = pctColor(latest.within_0_05);
+  document.getElementById('ls-002').textContent = pct(latest.within_0_02);
+  document.getElementById('ls-002').style.color = pctColor(latest.within_0_02);
+  document.getElementById('ls-001').textContent = pct(latest.within_0_01);
+  document.getElementById('ls-001').style.color = pctColor(latest.within_0_01);
+  document.getElementById('ls-mae').textContent = latest.mae != null ? latest.mae.toFixed(4) : '—';
+  document.getElementById('ls-samples').textContent = latest.samples_used != null ? latest.samples_used.toLocaleString() : '—';
+
   const labels = history.map((_, i) => `v${i + 1}`);
   const within010 = history.map(h => (h.within_0_10 ?? 0) * 100);
   const within005 = history.map(h => (h.within_0_05 ?? 0) * 100);
@@ -377,6 +404,18 @@ async function loadData() {
 
     statusLine.textContent = '';
     lastUpdatedEl.textContent = new Date().toLocaleTimeString();
+
+    // Load range accuracy separately — it's slow and shouldn't block the rest
+    const rangeGrid = document.getElementById('range-accuracy-grid');
+    rangeGrid.innerHTML = '<p class="no-data">Loading range accuracy\u2026 (this may take up to 60 seconds)</p>';
+    fetchJSON(`${prefix}/range-accuracy`)
+      .then(rangeAccuracy => renderRangeAccuracy(rangeAccuracy))
+      .catch(err => {
+        rangeGrid.innerHTML = `<p class="no-data">Could not load range accuracy: ${err.message}</p>`;
+      });
+
+    statusLine.textContent = '';
+    lastUpdatedEl.textContent = new Date().toLocaleTimeString();
   } catch (err) {
     statusLine.textContent = `Error loading data: ${err.message}`;
   } finally {
@@ -384,7 +423,53 @@ async function loadData() {
   }
 }
 
-profileSelect.addEventListener('change', loadData);
+function renderRangeAccuracy(data) {
+  const grid = document.getElementById('range-accuracy-grid');
+  const BAC_ORDER = ['0.00-0.02','0.02-0.04','0.04-0.06','0.06-0.08','0.08-0.10','0.10-0.12','0.12-0.14','0.14+'];
+
+  function thresholdColor(val) {
+    if (val === null) return 'var(--text-faint)';
+    const pct = val * 100;
+    if (pct >= 80) return 'var(--green)';
+    if (pct >= 50) return 'var(--amber)';
+    return 'var(--red)';
+  }
+
+  function fmt(val) {
+    return val === null ? '—' : (val * 100).toFixed(1) + '%';
+  }
+
+  grid.innerHTML = BAC_ORDER.map(range => {
+    const d = data[range];
+    if (!d || d.sample_count === 0) {
+      return `
+        <div class="range-card">
+          <p class="range-card-title">${range}</p>
+          <p class="range-card-count">0 samples</p>
+          <p class="no-data">No data collected yet</p>
+        </div>`;
+    }
+
+    const thresholds = [
+      { label: '±0.01', val: d.within_0_01 },
+      { label: '±0.02', val: d.within_0_02 },
+      { label: '±0.05', val: d.within_0_05 },
+      { label: '±0.10', val: d.within_0_10 },
+    ];
+
+    return `
+      <div class="range-card">
+        <p class="range-card-title">${range} BAC</p>
+        <p class="range-card-count">${d.sample_count.toLocaleString()} samples</p>
+        ${thresholds.map(t => `
+          <div class="range-threshold">
+            <span class="range-threshold-label">${t.label}</span>
+            <span class="range-threshold-value" style="color:${thresholdColor(t.val)}">${fmt(t.val)}</span>
+          </div>`).join('')}
+        <p class="range-mae">MAE: ${d.mae !== null ? d.mae.toFixed(4) : '—'}</p>
+      </div>`;
+  }).join('');
+}
 refreshBtn.addEventListener('click', loadData);
 
 loadData();
