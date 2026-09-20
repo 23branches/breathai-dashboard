@@ -307,6 +307,114 @@ function renderHistoryChart(history) {
   });
 }
 
+function renderRangeHistoryChart(history, bucket, chartKey, canvasId, emptyId) {
+  const emptyNote = document.getElementById(emptyId);
+  const canvas = document.getElementById(canvasId);
+  destroyChart(chartKey);
+
+  const points = (history || []).filter(h => {
+    const r = h.range_accuracy && h.range_accuracy[bucket];
+    return r && r.sample_count > 0;
+  });
+
+  if (points.length === 0) {
+    canvas.style.display = 'none';
+    emptyNote.hidden = false;
+    return;
+  }
+
+  canvas.style.display = 'block';
+  canvas.style.width = '100%';
+  canvas.style.height = '260px';
+  canvas.parentElement.style.height = '260px';
+  emptyNote.hidden = true;
+
+  const labels = points.map((_, i) => `v${i + 1}`);
+  const within010 = points.map(h => (h.range_accuracy[bucket].within_0_10 ?? 0) * 100);
+  const within005 = points.map(h => (h.range_accuracy[bucket].within_0_05 ?? 0) * 100);
+  const within002 = points.map(h => (h.range_accuracy[bucket].within_0_02 ?? 0) * 100);
+  const within001 = points.map(h => (h.range_accuracy[bucket].within_0_01 ?? 0) * 100);
+  const target = points.map(() => 80);
+
+  charts[chartKey] = new Chart(canvas, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'Within ±0.10 BAC',
+          data: within010,
+          borderColor: '#5fae4e',
+          backgroundColor: 'rgba(95,174,78,0.08)',
+          fill: false,
+          tension: 0.3,
+          pointRadius: 4,
+        },
+        {
+          label: 'Within ±0.05 BAC',
+          data: within005,
+          borderColor: '#3b82f6',
+          backgroundColor: 'rgba(59,130,246,0.08)',
+          fill: false,
+          tension: 0.3,
+          pointRadius: 4,
+        },
+        {
+          label: 'Within ±0.025 BAC',
+          data: within002,
+          borderColor: '#d99a2b',
+          backgroundColor: 'rgba(217,154,43,0.08)',
+          fill: false,
+          tension: 0.3,
+          pointRadius: 4,
+        },
+        {
+          label: 'Within ±0.01 BAC (ultimate goal)',
+          data: within001,
+          borderColor: '#e1554f',
+          backgroundColor: 'rgba(225,85,79,0.08)',
+          fill: false,
+          tension: 0.3,
+          pointRadius: 4,
+        },
+        {
+          label: 'Target (80%)',
+          data: target,
+          borderColor: '#56565e',
+          borderDash: [4, 4],
+          borderWidth: 1.5,
+          pointRadius: 0,
+          fill: false,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: 'bottom',
+          labels: { color: '#8d8d96', boxWidth: 10, boxHeight: 10, font: { size: 11 } },
+        },
+        tooltip: {
+          callbacks: {
+            label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(1)}%`,
+          },
+        },
+      },
+      scales: {
+        x: { grid: { display: false }, ticks: { color: '#8d8d96' } },
+        y: {
+          grid: { color: '#232328' },
+          ticks: { color: '#8d8d96', callback: v => v + '%' },
+          min: 0,
+          max: 100,
+        },
+      },
+    },
+  });
+}
+
 function renderTagChart(canvasId, emptyId, key, tagData, accentColor) {
   const emptyNote = document.getElementById(emptyId);
   const canvas = document.getElementById(canvasId);
@@ -399,6 +507,8 @@ async function loadData() {
     renderStats(prefix, status, analytics, latestHistory);
     renderBacChart(analytics);
     renderHistoryChart(history);
+    renderRangeHistoryChart(history, '0.06-0.08', 'history0608', 'historyChart0608', 'history-empty-0608');
+    renderRangeHistoryChart(history, '0.08-0.10', 'history0810', 'historyChart0810', 'history-empty-0810');
     renderTagChart('environmentChart', 'environment-empty', 'environment', analytics.environment, '#3b82f6');
     renderTagChart('noiseChart', 'noise-empty', 'noise', analytics.noise, '#d99a2b');
     renderTagChart('behaviorChart', 'behavior-empty', 'behavior', analytics.behavior, '#5fae4e');
