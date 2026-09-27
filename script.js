@@ -1,4 +1,4 @@
-const API_BASE = 'https://18.188.109.192.nip.io';
+const API_BASE = 'https://32.196.132.74.nip.io';
 const GAP_TARGET = 1250; // recommended minimum samples per BAC bucket
 const BAC_ORDER = ['0.00-0.02', '0.02-0.04', '0.04-0.06', '0.06-0.08', '0.08-0.10', '0.10-0.12', '0.12-0.14', '0.14+'];
 
